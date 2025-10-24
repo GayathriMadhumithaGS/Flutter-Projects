@@ -8,24 +8,20 @@ class CompanyListNotifier extends StateNotifier<List<Company>> {
   final _service = CompanyService();
 
   Future<void> fetchCompanies() async {
-    print("Fetch");
     state = await _service.getAllCompanies();
   }
 
   void addCompany(Company company) {
-    print("Add");
     state = [...state, company];
   }
 
   void updateCompany(Company updated) {
-    print("Update");
     state = [
       for (final c in state) if (c.id == updated.id) updated else c,
     ];
   }
 
   Future<void> deleteCompany(int id) async {
-    print("Delete");
     await _service.deleteCompany(id);
     state = state.where((c) => c.id != id).toList();
   }

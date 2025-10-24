@@ -13,7 +13,6 @@ class CompanyService{
     try {
       final response = await http.get(Uri.parse(baseUrl));
       if (response.statusCode == 200) {
-        // Parse in background isolate
         return await compute(_parseCompanies, response.body);
       } else {
         throw Exception(

@@ -26,7 +26,6 @@ class _CreateCompanyState extends ConsumerState<CreateCompany> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Company Name
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -46,7 +45,6 @@ class _CreateCompanyState extends ConsumerState<CreateCompany> {
                       border: OutlineInputBorder()),
                 ),
               ),
-              // Phone Number
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -66,7 +64,6 @@ class _CreateCompanyState extends ConsumerState<CreateCompany> {
                       border: OutlineInputBorder()),
                 ),
               ),
-              // Address
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -82,7 +79,6 @@ class _CreateCompanyState extends ConsumerState<CreateCompany> {
                       border: OutlineInputBorder()),
                 ),
               ),
-              // Submit Button
               ElevatedButton(
                 onPressed: () async {
                   if (_key.currentState!.validate()) {
@@ -93,10 +89,8 @@ class _CreateCompanyState extends ConsumerState<CreateCompany> {
                       companyLogo: "https://logo.clearbit.com/godaddy.com",
                     );
 
-                    // Persist to backend
                     await CompanyService().createCompany(newCompany);
 
-                    // Update Riverpod state
                     ref.read(companyListProvider.notifier).addCompany(newCompany);
 
                     ScaffoldMessenger.of(context).showSnackBar(
