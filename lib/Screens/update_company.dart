@@ -1,130 +1,135 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_projects/Models/company.dart';
-import 'package:flutter_projects/Services/company_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../Models/company.dart';
+import '../Providers/company_provider.dart';
+import '../Services/company_service.dart';
 
-class UpdateCompany extends StatefulWidget {
+class UpdateCompany extends ConsumerStatefulWidget {
   final Company? company;
   const UpdateCompany({super.key, this.company});
 
   @override
-  State<UpdateCompany> createState() => _UpdateCompanyState();
+  ConsumerState<UpdateCompany> createState() => _UpdateCompanyState();
 }
 
-class _UpdateCompanyState extends State<UpdateCompany> {
+class _UpdateCompanyState extends ConsumerState<UpdateCompany> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final GlobalKey<FormState> _key = GlobalKey();
+  final GlobalKey<FormState> _key = GlobalKey<FormState>();
 
   @override
   void initState() {
-    if(widget.company != null){
-      _nameController.text = widget.company!.companyName!;
-      _phoneController.text = widget.company!.phoneNumber!;
-      _addressController.text = widget.company!.companyAddress!;
-    }
     super.initState();
+    if (widget.company != null) {
+      _nameController.text = widget.company!.companyName ?? '';
+      _phoneController.text = widget.company!.phoneNumber ?? '';
+      _addressController.text = widget.company!.companyAddress ?? '';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Update Company"),
-      ),
+      appBar: AppBar(title: const Text("Update Company")),
       body: Form(
-          key: _key,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return "Please enter company name";
-                      }
-                      final alphanumeric = RegExp(r'^[a-zA-Z0-9 .-]+$');
-                      if (!alphanumeric.hasMatch(value)) {
-                        return "Company name must be alphanumeric";
-                      }
-                      return null;
-                    },
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                        labelText: "Company Name",
-                        hintText: "Enter the company name",
-                        border: OutlineInputBorder()
-                    ),
-                  ),
+        key: _key,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Company Name
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _nameController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value!.isEmpty) return "Please enter company name";
+                    final alphanumeric = RegExp(r'^[a-zA-Z0-9 .-]+$');
+                    if (!alphanumeric.hasMatch(value)) {
+                      return "Company name must be alphanumeric";
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                      labelText: "Company Name",
+                      hintText: "Enter the company name",
+                      border: OutlineInputBorder()),
                 ),
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return "Please enter phone number";
-                      }
-                      final phoneRegExp = RegExp(r'^\+?[\d\s\-\(\)]{7,20}$');
-                      if (!phoneRegExp.hasMatch(value)) {
-                        return "Please enter a valid phone number";
-                      }
-                      return null;
-                    },
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                        labelText: "Phone Number",
-                        hintText: "Enter the phone number",
-                        border: OutlineInputBorder()
-                    ),
-                  ),
+              ),
+              // Phone Number
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _phoneController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value!.isEmpty) return "Please enter phone number";
+                    final phoneRegExp = RegExp(r'^\+?[\d\s\-\(\)]{7,20}$');
+                    if (!phoneRegExp.hasMatch(value)) {
+                      return "Please enter a valid phone number";
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                      labelText: "Phone Number",
+                      hintText: "Enter the phone number",
+                      border: OutlineInputBorder()),
                 ),
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return "Please enter address";
-                      }
-                      return null;
-                    },
-                    controller: _addressController,
-                    decoration: InputDecoration(
-                        labelText: "Address",
-                        hintText: "Enter the address",
-                        border: OutlineInputBorder()
-                    ),
-                  ),
+              ),
+              // Address
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _addressController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value!.isEmpty) return "Please enter address";
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                      labelText: "Address",
+                      hintText: "Enter the address",
+                      border: OutlineInputBorder()),
                 ),
+              ),
+              // Submit Button
+              ElevatedButton(
+                onPressed: () async {
+                  if (_key.currentState!.validate()) {
+                    // Create updated company object
+                    final updatedCompany = Company(
+                      companyName: _nameController.text,
+                      phoneNumber: _phoneController.text,
+                      companyAddress: _addressController.text,
+                      companyLogo: "https://logo.clearbit.com/godaddy.com",
+                    );
+                    updatedCompany.id = widget.company?.id;
 
-                ElevatedButton(onPressed: () async{
-                  if(_key.currentState!.validate()){
-                    Company company = Company(
-                        companyName: _nameController.text,
-                        phoneNumber: _phoneController.text,
-                        companyAddress: _addressController.text,
-                        companyLogo: "https://logo.clearbit.com/godaddy.com"
+                    // Persist to backend if needed
+                    if (widget.company != null) {
+                      await CompanyService()
+                          .updateCompany(updatedCompany, widget.company!.id!);
+
+                      // Update state via provider
+                      ref
+                          .read(companyListProvider.notifier)
+                          .updateCompany(updatedCompany);
+                    }
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Company Updated Successfully")),
                     );
 
-                    if(widget.company != null){
-                      await CompanyService().updateCompany(company, widget.company!.id!);
-                    }
-                    else{
-                      await CompanyService().createCompany(company);
-                    }
-
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Company Updated Successfully")));
                     Navigator.pop(context, true);
                   }
-                }, child: Text("Submit"))
-              ],
-            ),
-          )),
+                },
+                child: const Text("Submit"),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

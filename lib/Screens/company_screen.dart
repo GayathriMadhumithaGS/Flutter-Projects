@@ -82,22 +82,36 @@ class _CompanyScreenState extends ConsumerState<CompanyScreen> {
           itemCount: companies.length + 1, // extra item for loader
           itemBuilder: (context, index) {
             if (index == companies.length) {
-              return _isLoadingMore
-                  ? const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Center(
-                  child: SizedBox(
+              if (_isLoadingMore) {
+                // show loader while loading
+                return const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(
+                    child: SizedBox(
                       width: 24,
                       height: 24,
-                      child: CircularProgressIndicator()),
-                ),
-              )
-                  : const SizedBox.shrink();
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                );
+              } else {
+                // Show "No more companies" message when end reached
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Center(
+                    child: Text(
+                      "No more companies available",
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ),
+                );
+              }
             }
 
             final company = companies[index];
             return _buildCompanyItem(company, itemHeight);
           },
+
         ),
       ),
     );
